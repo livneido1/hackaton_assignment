@@ -2,5 +2,8 @@
 import socket
 
 
-def lookForServer(self, host, port):
+port = 6666
+size = 1024
+
+def listenAll():
 
