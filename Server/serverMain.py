@@ -22,7 +22,7 @@ def handle_cilent(connection, addr):
             msg_len = int(msg_len)
             msg = connection.recv(msg_len).decode(FORMAT)
             if msg == DISCONNECT_MSG:
-                connected = false
+                connected = False
             print(f"[{addr}] -> {msg}")
 
     connection.close()

@@ -22,3 +22,13 @@ def send(msg):
     client.send(send_length)
     client.send(message)
 
+send("hello bitch")
+
+finished = False
+while (not finished):
+    new_msg =input()
+    send(new_msg)
+    if new_msg == "!DISCONNECT":
+        finished = True
+        
+    
