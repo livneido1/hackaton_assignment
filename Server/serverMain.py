@@ -12,6 +12,8 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
 
+
+#Runs in parallel for each client
 def handle_cilent(connection, addr):
     print(f"{addr} has been connected successfully!")
     connected = True
@@ -28,12 +30,14 @@ def handle_cilent(connection, addr):
     connection.close()
 
 def start():
-    server.listen()
+    server.listen(2) 
+    #server.listen()
     print(f"[LISTENING] on {ADDR}")
     while True:
         # sotring the address and the socket so we will be able to send back 
         connection , addr  = server.accept()
-        thread = threading.Thread(target=handle_cilent(connection, addr))
+        thread = threading.Thread(target=handle_cilent, args= (connection,addr))
+        #thread = threading.Thread(target=handle_cilent(connection, addr))
         thread.start()
         print(f"new client has been connected! \n{threading.activeCount() -1} client are connected")
 
