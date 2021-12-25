@@ -21,4 +21,11 @@ def send(msg):
     send_length += b' ' * (HEADER - len(send_length))
     client.send(send_length)
     client.send(message)
+    
+    #new method - need to check 
+def recieve():
+    client.bind(("",37020))
+    while true:    
+        data , addr = client.recvfrom(1024) #1024 is buffer size
+        print(b"message recieved!")
 

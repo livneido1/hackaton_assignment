@@ -30,11 +30,14 @@ def handle_cilent(connection, addr):
     connection.close()
 
 def start():
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     server.listen(2) 
     #server.listen()
     print(f"[LISTENING] on {ADDR}")
     while True:
-        # sotring the address and the socket so we will be able to send back 
+        # sotring the address and the socket so we will be able to send back
+        #37020 is example - need to change it. 
+        server.sendto(b"something", ('<broadcast>',37020))
         connection , addr  = server.accept()
         thread = threading.Thread(target=handle_cilent, args= (connection,addr))
         #thread = threading.Thread(target=handle_cilent(connection, addr))
