@@ -24,7 +24,7 @@ def send(msg):
     
     #new method - need to check 
 def recieve():
-    client.bind(("",37020))
+    client.bind(("",2024))
     while true:    
         data , addr = client.recvfrom(1024) #1024 is buffer size
         print(b"message recieved!")
