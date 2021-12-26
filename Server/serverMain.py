@@ -10,6 +10,10 @@ ADDR = (SERVER, port)
 # AF_INET stands for IPv4
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 server.bind(ADDR)
+#Package Formats! 
+broadcastPort = 13117
+magicCookie = 0xabcddcba
+messageType = 0x2
 
 
 
