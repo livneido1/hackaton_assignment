@@ -1,17 +1,18 @@
 
 import socket
 
-
+buffSize = 1024
 HEADER = 64
-port = 2024
+udpPort = 13117
 FORMAT = 'utf-8'
 DISCONNECT_MSG = "!DISCONNECT"
 SERVER = '192.168.56.1'
-ADDR = (SERVER, port)
+ADDR = (SERVER, udpPort)
 
-
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(ADDR)
+client = socket.socket(socket.AF_INET , socket.SOCK_DGRAM)
+client.bind(('' ,udpPort ))
+# client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# client.connect(ADDR)
 
 def send(msg):
     message = msg.encode(FORMAT)
@@ -21,14 +22,24 @@ def send(msg):
     send_length += b' ' * (HEADER - len(send_length))
     client.send(send_length)
     client.send(message)
+    
+    #new method - need to check 
+def recieve():
+    client.bind(("",2024))
+    while true:    
+        data , addr = client.recvfrom(1024) #1024 is buffer size
+        print(b"message recieved!")
 
-send("hello bitch")
-
-finished = False
-while (not finished):
-    new_msg =input()
-    send(new_msg)
-    if new_msg == "!DISCONNECT":
-        finished = True
+def start():
+    print("client started, listening for offer requests")
+    [msg, retAddr] = client.recvfrom(buffSize)
+    serverIP = retAddr[0]
+    serverPort = retAddr[1]
+    decodedMsg = msg.decode(FORMAT)
+    # msg  = client.recv(1024).decode(FORMAT)
+    if decodedMsg:
+        print(f"recieved offer from {serverIP} , attempting to connect...")
         
+
+start()
     
