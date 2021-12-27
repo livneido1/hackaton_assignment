@@ -32,8 +32,14 @@ def recieve():
 
 def start():
     print("client started, listening for offer requests")
-    msg =  client.recv(buffSize)
-    print(msg[0])
-    
+    [msg, retAddr] = client.recvfrom(buffSize)
+    serverIP = retAddr[0]
+    serverPort = retAddr[1]
+    decodedMsg = msg.decode(FORMAT)
+    # msg  = client.recv(1024).decode(FORMAT)
+    if decodedMsg:
+        print(f"recieved offer from {serverIP} , attempting to connect...")
+        
+
 start()
     
