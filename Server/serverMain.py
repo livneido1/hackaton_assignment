@@ -2,16 +2,18 @@ import socket
 import threading
 
 HEADER = 64
-port = 2024
+UDP_PORT = 13117
+TCP_PORT = 2024
 FORMAT = 'utf-8'
 DISCONNECT_MSG = "!DISCONNECT"
 SERVER = socket.gethostbyname(socket.gethostname())
-ADDR = (SERVER, port)
+TCP_ADDR = (SERVER, TCP_PORT)
+UDP_ADDR = (SERVER, UDP_PORT)
+UdpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 # AF_INET stands for IPv4
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-server.bind(ADDR)
+server.bind(TCP_ADDR)
 #Package Formats! 
-broadcastPort = 13117
 magicCookie = 0xabcddcba
 messageType = 0x2
 
@@ -34,10 +36,16 @@ def handle_cilent(connection, addr):
     connection.close()
 
 def start():
-    #server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    UdpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    UdpSocket.bind(UDP_ADDR)
+    boardcastMsg = "server started, listening on ip adderess:" + SERVER 
+    print(boardcastMsg)
+    boardcastMsgEncoded = boardcastMsg.encode(FORMAT)
+    UdpSocket.sendto(boardcastMsgEncoded, ("255.255.255.255", UDP_PORT))
+
     server.listen(2) 
     #server.listen()
-    print(f"[LISTENING] on {ADDR}")
+    # print(f"[LISTENING] on {TCP_ADDR}")
     while True:
         # sotring the address and the socket so we will be able to send back
         connection , addr  = server.accept()

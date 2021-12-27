@@ -1,17 +1,18 @@
 
 import socket
 
-
+buffSize = 1024
 HEADER = 64
-port = 2024
+udpPort = 13117
 FORMAT = 'utf-8'
 DISCONNECT_MSG = "!DISCONNECT"
 SERVER = '192.168.56.1'
-ADDR = (SERVER, port)
+ADDR = (SERVER, udpPort)
 
-
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(ADDR)
+client = socket.socket(socket.AF_INET , socket.SOCK_DGRAM)
+client.bind(('' ,udpPort ))
+# client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# client.connect(ADDR)
 
 def send(msg):
     message = msg.encode(FORMAT)
@@ -29,3 +30,10 @@ def recieve():
         data , addr = client.recvfrom(1024) #1024 is buffer size
         print(b"message recieved!")
 
+def start():
+    print("client started, listening for offer requests")
+    msg =  client.recv(buffSize)
+    print(msg[0])
+    
+start()
+    
