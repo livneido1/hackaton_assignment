@@ -39,8 +39,10 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(TCP_ADDR)
 
 #Package Formats! 
-magicCookie =  b'\0xab\0xcd\0xdc\0xba'
-messageType = b'\0x2'
+# magicCookie =  b'\0xab\0xcd\0xdc\0xba'
+# messageType = b'\0x2'
+magicCookie = bytes([0xab,0xcd,0xdc,0xba])
+messageType =bytes([0x2])
 FORMAT = 'utf-8'
 
 
@@ -80,7 +82,7 @@ def handle_cilent(receiveLock: threading.Lock , startGameLock : threading.Lock, 
             receiveLock.release()
             startGameLock.acquire()
             startGameMassage = f"Welcome To Quick Maths.\nPlayer 1: {players[0]}\nPlayer 2: {players[1]}\n==\nPlease answer the following question as fast as you can:\n{question}" 
-            connection.send(startGameMassage.encode(FORMAT))
+            connection.sendall(startGameMassage.encode(FORMAT))
             clientAnswer= connection.recv(buffSize).decode(FORMAT)
             # first to recieve answer gets the lock
             # setResultMessage("",currectAnswer , 2)
@@ -91,7 +93,7 @@ def handle_cilent(receiveLock: threading.Lock , startGameLock : threading.Lock, 
             # if haven't changed yet - it is the first client
             if (resultMessage == ""):
                 setResultMessage(clientAnswer, currectAnswer,clientIndex )
-                answerLock.release()
+            answerLock.release()
 
             # result Message has beed updated by Manager
             connection.send(resultMessage.encode(FORMAT))
@@ -168,16 +170,19 @@ def start():
     UdpSocket.bind(UDP_ADDR)
     boardcastMsg = str(TCP_WELCOME_PORT)
     boardcastMsgEncoded = boardcastMsg.encode(FORMAT)
-    # fullMassege = magicCookie + messageType + boardcastMsgEncoded
-    fullMassege = boardcastMsgEncoded
+    fullMassege = magicCookie + messageType + boardcastMsgEncoded
+    # fullMassege = boardcastMsgEncoded
     welcomeThread = threading.Thread(target=welcomeClients,args=(stopUpdLock,))
     welcomeThread.start()   
     print("Server started, listening on IP address "+SERVER )
     while True:
-        stopUpdLock.acquire()
-        UdpSocket.sendto(fullMassege, ("255.255.255.255", UDP_PORT))
-        stopUpdLock.release()
-        time.sleep(1)
+        try:
+            stopUpdLock.acquire()
+            UdpSocket.sendto(fullMassege, ("255.255.255.255", UDP_PORT))
+            stopUpdLock.release()
+            time.sleep(1)
+        except:
+            ""
             
         
  
