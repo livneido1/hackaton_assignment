@@ -46,7 +46,7 @@ def start():
 
     # ADDR = (SERVER, udpPort)
     try:
-        [msg, retAddr] = udpSocket.recvfrom(buffSize)
+        msg, retAddr = udpSocket.recvfrom(buffSize)
 
         if not (msg[:4] == bytes([0xab,0xcd,0xdc,0xba]) or not (msg[4] == bytes([0x2])) ):
             print("recivied message's format doesn't match. couldnt recieve")
