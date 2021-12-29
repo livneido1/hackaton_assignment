@@ -7,14 +7,14 @@ import random
 import math
 import GameSettings
 import struct
-
+import scapy
 
 
 
 
 # global hard coded values
 buffSize = 1024
-UDP_PORT = 13128
+UDP_PORT = 13117
 TCP_WELCOME_PORT = 2024
 
 
@@ -33,7 +33,7 @@ questions  = [  ("3 + 2 = ?" , "5")
                 ,( "(4^2)/2" , "8")]
 
 
-# SERVER = scapy.all.get_if_addr(conf.iface)
+SERVER = scapy.all.get_if_addr('eth2')
 # gets the current IP
 SERVER = socket.gethostbyname(socket.gethostname())
 TCP_ADDR = (SERVER, TCP_WELCOME_PORT)
