@@ -82,8 +82,8 @@ winner = ""
 disconnected = [False, False]
 
 
-SERVER = scapy.all.get_if_addr(conf.iface)
-# SERVER = socket.gethostbyname(socket.gethostname())
+# SERVER = scapy.all.get_if_addr(conf.iface)
+SERVER = socket.gethostbyname(socket.gethostname())
 TCP_ADDR = (SERVER, TCP_WELCOME_PORT)
 UDP_ADDR = (SERVER, 0)
 
