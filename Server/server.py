@@ -7,7 +7,6 @@ import random
 import math
 import GameSettings
 import struct
-import scapy 
 
 # class GameSettings:
 #     players = ["",""]
