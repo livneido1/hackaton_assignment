@@ -259,6 +259,7 @@ def start():
     welcomeThread = threading.Thread(target=welcomeClients,args=(stopUpdLock,))
     welcomeThread.start()   
     print("Server started, listening on IP address "+SERVER )
+    
     while True:
         try:
             stopUpdLock.acquire()
