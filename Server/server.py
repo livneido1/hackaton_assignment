@@ -9,6 +9,7 @@ import GameSettings
 import struct
 
 
+
 # class GameSettings:
 #     players = ["",""]
 #     disconnected = [False, False]
