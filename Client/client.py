@@ -4,7 +4,7 @@ import sys
 
 buffSize = 1024
 HEADER = 64
-udpPort = 13117
+udpPort = 13128
 
 # formats
 FORMAT = 'utf-8'
