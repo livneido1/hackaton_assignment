@@ -6,6 +6,7 @@ import _thread
 import random
 import math
 import GameSettings
+import struct
 
 
 # class GameSettings:
@@ -92,8 +93,9 @@ server.bind(TCP_ADDR)
 #Package Formats! 
 # magicCookie =  b'\0xab\0xcd\0xdc\0xba'
 # messageType = b'\0x2'
-magicCookie = bytes([0xab,0xcd,0xdc,0xba])
-messageType =bytes([0x2])
+# magicCookie = bytes([0xab,0xcd,0xdc,0xba])
+magicCookie = 0xabcddcba
+messageType =0x2
 FORMAT = 'utf-8'
 
 
@@ -244,10 +246,12 @@ def welcomeClients(udpStopLock: threading.Lock):
 
 # UDP code
 def start(): 
+    global magicCookie
+    global messageType
     stopUpdLock = threading.Lock()
     UdpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     UdpSocket.bind(UDP_ADDR)
-    fullMassege = struct.pack("Ibh",magicCookie,messageType, UDP_ADDR)
+    fullMassege = struct.pack("Ibh",magicCookie,messageType, TCP_WELCOME_PORT)
     # boardcastMsg = str(TCP_WELCOME_PORT)
     # boardcastMsgEncoded = boardcastMsg.encode(FORMAT)
     # fullMassege = magicCookie + messageType + boardcastMsgEncoded

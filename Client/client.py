@@ -12,8 +12,8 @@ FORMAT = 'utf-8'
 SERVER = '192.168.56.1'
 # magicCookie =  b'\0xab\0xcd\0xdc\0xba'
 # messageType = b'\0x2'
-magicCookie = bytes([0xab,0xcd,0xdc,0xba])
-messageType =bytes([0x2])
+magicCookie = 0xabcddcba
+messageType =0x2
 # TeamName
 _teamName = "NullPointerException\n" 
 
@@ -63,8 +63,9 @@ def start():
         print("recivied message's format doesn't match. couldnt recieve")
 
     else:
+        
         # msg = msg[5:] 
-        # serverIP = retAddr[0]
+        serverIP = retAddr[0]
         # serverPort = retAddr[1]
         # decodedMsg = msg.decode(FORMAT)
         # portToConnect = int(decodedMsg)
@@ -72,7 +73,7 @@ def start():
         if decodedMsg:
             print(f"recieved offer from {serverIP} , attempting to connect...")
             gameSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            gameSocket.connect((serverIP ,portToConnect) )
+            gameSocket.connect((serverIP ,port) )
             # sends team name
             gameSocket.sendall(_teamName.encode(FORMAT))
             # recieve game questions 
