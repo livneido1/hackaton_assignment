@@ -1,9 +1,50 @@
 import socket
 import threading
+from threading import Event, ThreadError
 import time 
 import _thread
 import random
 import math
+import GameSettings
+
+
+# class GameSettings:
+#     players = ["",""]
+#     disconnected = [False, False]
+#     resultMessege = ""
+#     myLock = threading.Lock()
+
+
+#     def __init__(self):
+#         self.players = ["",""]
+#         self.disconnected = [False, False]
+#         self.resultMessege = ""
+
+
+#     def add(self):
+#         self.resultMessege += "1"
+#         return self.resultMessege
+    
+#     def getResultMessage(self):
+#         return self.resultMessege
+
+#     def setPlayerName(self, index,name):
+#         self.players[index] = name
+
+#     def setResultMessage(self, clientAnswer :str , correctAnswer :str, clientIndex:int ):
+#         self.myLock.acquire()
+#         resultMessage = "Game over!" +"\nThe correct answer was " + correctAnswer
+#         if clientIndex <2:
+#             if correctAnswer == clientAnswer:
+#                 winner = self.players[clientIndex]
+#             else:
+#                 winner = self.players[((clientIndex +1) %2)]
+#             resultMessage += "\n\nCongratulations to the Winner " + winner
+#         else:
+#                 resultMessage += "\n\nTime out so it a Tie! How come you study in BGU?? Shame on you! "
+
+#         self.myLock.release()
+
 
 
 HEADER = 64
@@ -17,7 +58,15 @@ TCP_CLIENT_2 = 2026
 questions  = [  ("3 + 2 = ?" , "5")
                 ,( "(10 -5 +3 ) * 0 = ??" , "0")
                 ,( "5 /5  = ??" , "1")
-                ,( "2^3" , "8")]
+                ,( "2^3" , "8")
+	 ,("3 * 2 = ?" , "6")
+                ,( "(10 -9+8-7+6-5+4-3+2-1 ) = ??" , "5")
+                ,( "7*7 /7  = ??" , "7")
+                ,( "81/9" , "9")
+	 ,("2 + 2 = ?" , "4")
+                ,( "(10 -5-3) * 1 = ??" , "2")
+                ,( "18/6 = ??" , "3")
+                ,( "(4^2)/2" , "8")]
 
 # fields
 firstConnect = False
@@ -26,8 +75,10 @@ connectedClients = 0
 players = ["",""]
 recievedAnswer = None
 resultMessage = "" 
+
 playerAnswered = 0
 winner = ""
+disconnected = [False, False]
 
 SERVER = socket.gethostbyname(socket.gethostname())
 TCP_ADDR = (SERVER, TCP_WELCOME_PORT)
@@ -51,71 +102,94 @@ ADDR_CLIENT2 = (SERVER, TCP_CLIENT_2)
 ADDR_CLIENT1 = (SERVER, TCP_CLIENT_1)
 
 
-def setResultMessage(clientAnswer :str , correctAnswer :str, clientIndex:int ):
-    global resultMessage
-    resultMessage = "Game over!" +"\nThe correct answer was " + correctAnswer
-    if clientIndex <2:
-        if correctAnswer == clientAnswer:
-            winner = players[clientIndex]
-        else:
-            winner = players[((clientIndex +1) %2)]
-        resultMessage += "\n\nCongratulations to the Winner " + winner
-    else:
-        resultMessage += "Tie! How come you study in BGU?? Shame on you! "
+# def setDisconnectMessage():
+#     global disconnected
+#     global players
+#     global resultMessage
+#     if (disconnected[0]):
+#         resultMessage = players[0] + "has been disconnected!\ntherefor....\nYOU WIN"
+#     else:
+#         resultMessage = players[1] + "has been disconnected!\ntherefor....\nYOU WIN"
+
+
+
+
+# def setResultMessage(clientAnswer :str , correctAnswer :str, clientIndex:int ):
+#     global resultMessage
+#     global disconnected
+#     resultMessage = "Game over!" +"\nThe correct answer was " + correctAnswer
+#     if clientIndex <2:
+#         if correctAnswer == clientAnswer:
+#             winner = players[clientIndex]
+#         else:
+#             winner = players[((clientIndex +1) %2)]
+#         resultMessage += "\n\nCongratulations to the Winner " + winner
+#     else:
+#         resultMessage += "\n\nTime out so it a Tie! How come you study in BGU?? Shame on you! "
 
 
 # index for the player index
 def handle_cilent(receiveLock: threading.Lock , startGameLock : threading.Lock, clientIndex: int ,
-                 questionTuple , answerLock : threading.Lock ):
+                 questionTuple , currentGameSettings :GameSettings.GameSettings):
     receiveLock.acquire()
     server.listen()
     connection , addr  = server.accept()
-    print(f"{addr} has been connected successfully!")
-    question, currectAnswer = questionTuple
+    try:
+        print(f"{addr} has been connected successfully!")
+        # question, currectAnswer = questionTuple
 
-    connected = True
-    while connected:
+
         # buffSize sets the size of the msg from the client
         playerName = connection.recv(buffSize).decode(FORMAT)
         if playerName:
-            players[clientIndex] = playerName
+            currentGameSettings.setPlayerName(clientIndex,playerName)
             receiveLock.release()
             startGameLock.acquire()
-            startGameMassage = f"Welcome To Quick Maths.\nPlayer 1: {players[0]}\nPlayer 2: {players[1]}\n==\nPlease answer the following question as fast as you can:\n{question}" 
-            connection.sendall(startGameMassage.encode(FORMAT))
-            clientAnswer= connection.recv(buffSize).decode(FORMAT)
-            # first to recieve answer gets the lock
-            # setResultMessage("",currectAnswer , 2)
+            connection.sendall(currentGameSettings.getGameStartMessage().encode(FORMAT))
+            try:
+                # if client send wrong value, sets its answer to be empty
+                clientAnswer= connection.recv(buffSize).decode(FORMAT)
+                currentGameSettings.setResultMessage(clientAnswer,clientIndex)
+            except:
+                if (currentGameSettings.getResultMessage == ""):
+                    clientAnswer = ""
+                    currentGameSettings.setResultMessage(clientAnswer,clientIndex)
 
-            answerLock.acquire()
-            # if no answer recieved
-            # if ( clientAnswer == None):
             # if haven't changed yet - it is the first client
-            if (resultMessage == ""):
-                setResultMessage(clientAnswer, currectAnswer,clientIndex )
-            answerLock.release()
+            if (currentGameSettings.isPlayerDiconnected()):
+                currentGameSettings.setDisconnectMessage()
+                
+            # else:
+            #     if (resultMessage == ""):
+            #         currentGameSettings.setResultMessage(clientAnswer, clientIndex )
 
-            # result Message has beed updated by Manager
-            connection.send(resultMessage.encode(FORMAT))
-            
-        connected = False
+            # # answerLock.release()
 
-    connection.close()
+            # # result Message has beed updated by Manager
+            connection.send(currentGameSettings.getResultMessage().encode(FORMAT))
+                
 
+        connection.close()
+    except:
+        currentGameSettings.disconnect(clientIndex) 
+
+def checkTie(gameSettings : GameSettings.GameSettings):
+    if (gameSettings.getResultMessage() == ""):
+        # index 2 means its a tie
+        gameSettings.setResultMessage("", 2)
 
 
 def welcomeClients(udpStopLock: threading.Lock):
+    global resultMessage
     while True:
-        # reset game values
-        global resultMessage
-        resultMessage = ""
-
-
         # create game settings
-
         questionIndex = math.floor(random.random() * len(questions))
         questionTuple = questions[questionIndex]
-
+        question, correctAnswer = questionTuple
+        # awakens the welcome thread if games over or 10 seconds passed
+        gameOverEvent = Event()
+        currentGameSettings = GameSettings.GameSettings(question , correctAnswer , gameOverEvent)
+        
         # lock made for equality between player
         # client lock block the welcome/manager thread untill player found 
         firstClientLock = threading.Lock()
@@ -123,14 +197,13 @@ def welcomeClients(udpStopLock: threading.Lock):
         # startGameLock blocks accepted client until the other player 
         startGameLockfirstPlayer = threading.Lock()
         startGameLockSecondPlayer =threading.Lock()
-        
+     
+
         # block the 2nd clients to answer
         answerLock = threading.Lock()
-
         # setting threads
-        client1 = threading.Thread(target=handle_cilent, args= (firstClientLock, startGameLockfirstPlayer,0, questionTuple,answerLock ))
-
-        client2 = threading.Thread(target=handle_cilent, args= (secondClientLock, startGameLockSecondPlayer,1 ,questionTuple, answerLock ))
+        client1 = threading.Thread(target=handle_cilent, args= (firstClientLock, startGameLockfirstPlayer,0, questionTuple,  currentGameSettings))
+        client2 = threading.Thread(target=handle_cilent, args= (secondClientLock, startGameLockSecondPlayer,1 ,questionTuple, currentGameSettings ))
 
         # prevent each client from starting the game before second client arrives    
         startGameLockfirstPlayer.acquire()
@@ -146,15 +219,21 @@ def welcomeClients(udpStopLock: threading.Lock):
 
         # need to wait 10 seconds after second player connected
         time.sleep(10)
+        print("question sent")
         # now 2 clients connected - stop UDP massages
         # let the players play
         startGameLockfirstPlayer.release()
         startGameLockSecondPlayer.release()
 
-
         # game Over
-        client1.join()
-        client2.join()
+        gameOverEvent.wait(10.0)
+        q, ans = questionTuple
+        checkTie(currentGameSettings)
+        
+        # answerLock.release()
+        
+        # client1.join()
+        # client2.join()
 
 
         # sends udp again

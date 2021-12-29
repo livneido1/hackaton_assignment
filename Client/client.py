@@ -61,18 +61,24 @@ def start():
                 gameSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 gameSocket.connect((serverIP ,portToConnect) )
                 # sends team name
-                gameSocket.send(_teamName.encode(FORMAT))
+                gameSocket.sendall(_teamName.encode(FORMAT))
                 # recieve game questions 
                 msg = gameSocket.recv(buffSize).decode(FORMAT)
                 print(msg)
                 # send answer
-                answer = sys.stdin.read(1)
-                gameSocket.send(answer.encode(FORMAT))
+                sys.stdin.flush()
+                answer = input()
+                # answer = sys.stdin.read(1)
+                sys.stdin.flush()
+
+                gameSocket.sendall(answer.encode(FORMAT))
                 # recieved result
                 result_msg = gameSocket.recv(buffSize).decode(FORMAT)
                 print(result_msg)
     except:
-        stam = "stam"   
+        print ("error accured")
+        pass
+
     print("server disconnectted, listening to offer requests")
 
 def startWrapper():
