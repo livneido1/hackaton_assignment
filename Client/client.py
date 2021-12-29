@@ -4,7 +4,7 @@ import sys
 
 buffSize = 1024
 HEADER = 64
-udpPort = 13177
+udpPort = 13188
 
 # formats
 FORMAT = 'utf-8'
@@ -28,11 +28,12 @@ def start():
     udpSocket.bind(('' ,udpPort) )
 
     try:
-   
         msg, retAddr = udpSocket.recvfrom(buffSize)
+        print("recieved msg")
+        print(str(msg))
         (magicCoockies ,Mtype, port) = struct.unpack("Ibh" ,msg )
         if not (magicCoockies == magicCookie and Mtype == messageType):
-            print("recivied message's format doesn't match. couldnt recieve")
+            print("recivied message's format doesn't match. couldnt recieve...")
 
         else:
             
