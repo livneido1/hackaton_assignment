@@ -83,7 +83,7 @@ disconnected = [False, False]
 
 SERVER = socket.gethostbyname(socket.gethostname())
 TCP_ADDR = (SERVER, TCP_WELCOME_PORT)
-UDP_ADDR = (SERVER, UDP_PORT)
+UDP_ADDR = (SERVER, 0)
 
 # Sockets
 UdpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
