@@ -59,6 +59,7 @@ class GameSettings:
         # if resultMessage is "", it was the first client/ sever to fill, otherwise, the client were too late
         if clientIndex > 1:
             self.resultMessage += "\n\nTime out so it a Tie! How come you study in BGU?? Shame on you! "
+            print ("Time over! Tie!")
         
         else:
             if self.resultMessage == "":

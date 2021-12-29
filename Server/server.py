@@ -7,7 +7,8 @@ import random
 import math
 import GameSettings
 import struct
-import scapy
+from scapy.all import get_if_addr
+
 
 
 
@@ -33,7 +34,7 @@ questions  = [  ("3 + 2 = ?" , "5")
                 ,( "(4^2)/2" , "8")]
 
 
-SERVER = scapy.all.get_if_addr('eth2')
+SERVER = get_if_addr('eth2')
 # gets the current IP
 SERVER = socket.gethostbyname(socket.gethostname())
 TCP_ADDR = (SERVER, TCP_WELCOME_PORT)
