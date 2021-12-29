@@ -7,7 +7,7 @@ import random
 import math
 import GameSettings
 import struct
-
+import scapy 
 
 # class GameSettings:
 #     players = ["",""]
@@ -81,7 +81,8 @@ playerAnswered = 0
 winner = ""
 disconnected = [False, False]
 
-SERVER = socket.gethostbyname(socket.gethostname())
+SERVER = scapy.get_if_addr(conf.iface)
+# SERVER = socket.gethostbyname(socket.gethostname())
 TCP_ADDR = (SERVER, TCP_WELCOME_PORT)
 UDP_ADDR = (SERVER, 0)
 
