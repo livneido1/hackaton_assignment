@@ -29,8 +29,6 @@ def start():
 
     try:
         msg, retAddr = udpSocket.recvfrom(buffSize)
-        print("recieved msg")
-        print(str(msg))
         (magicCoockies ,Mtype, port) = struct.unpack("Ibh" ,msg )
         if not (magicCoockies == magicCookie and Mtype == messageType):
             print("recivied message's format doesn't match. couldnt recieve...")
