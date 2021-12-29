@@ -174,7 +174,7 @@ def start():
     while True:
         try:
             stopUpdLock.acquire()
-            UdpSocket.sendto(fullMassege, ("255.255.255.255", UDP_PORT))
+            UdpSocket.sendto(fullMassege, ("172.99.255.255", UDP_PORT))
             stopUpdLock.release()
             time.sleep(1)
         except:
