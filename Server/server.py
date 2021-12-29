@@ -247,9 +247,10 @@ def start():
     stopUpdLock = threading.Lock()
     UdpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     UdpSocket.bind(UDP_ADDR)
-    boardcastMsg = str(TCP_WELCOME_PORT)
-    boardcastMsgEncoded = boardcastMsg.encode(FORMAT)
-    fullMassege = magicCookie + messageType + boardcastMsgEncoded
+    fullMassege = struct.pack("Ibh",magicCookie,messageType, UDP_ADDR)
+    # boardcastMsg = str(TCP_WELCOME_PORT)
+    # boardcastMsgEncoded = boardcastMsg.encode(FORMAT)
+    # fullMassege = magicCookie + messageType + boardcastMsgEncoded
     # fullMassege = boardcastMsgEncoded
     welcomeThread = threading.Thread(target=welcomeClients,args=(stopUpdLock,))
     welcomeThread.start()   
@@ -261,7 +262,7 @@ def start():
             stopUpdLock.release()
             time.sleep(1)
         except:
-            ""
+            print("error in server")
             
         
  
