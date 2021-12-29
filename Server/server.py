@@ -14,7 +14,7 @@ import scapy
 
 # global hard coded values
 buffSize = 1024
-UDP_PORT = 13117
+UDP_PORT = 13177
 TCP_WELCOME_PORT = 2024
 
 
